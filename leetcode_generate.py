@@ -44,13 +44,13 @@ BASE_URL = 'https://leetcode.com'
 PROXIES = None
 HEADERS = {
         'Accept': '*/*',
-        'Accept-Encoding': 'gzip,deflate,sdch',
-        'Accept-Language': 'zh-CN,zh;q=0.8,gl;q=0.6,zh-TW;q=0.4',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'en,zh-CN;q=0.9,zh;q=0.8',
         'Connection': 'keep-alive',
         'Content-Type': 'application/x-www-form-urlencoded',
         'Host': 'leetcode.com',
         'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36'  # NOQA
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36'  # NOQA
     }
 
 
@@ -74,7 +74,7 @@ def get_config_from_file():
 
     language = cp.get('leetcode', 'language')
     if not language:
-        language = 'python'    # language default python
+        language = 'python3'    # language3 default python
 
     repo = cp.get('leetcode', 'repo')
     if not repo:
@@ -104,7 +104,6 @@ def check_and_make_dir(dirname):
 
 
 ProgLang = namedtuple('ProgLang', ['language', 'ext', 'annotation'])
-
 ProgLangList = [ProgLang('cpp', 'cpp', '//'),
                 ProgLang('java', 'java', '//'),
                 ProgLang('python', 'py', '#'),
@@ -118,6 +117,7 @@ ProgLangList = [ProgLang('cpp', 'cpp', '//'),
 
 ProgLangDict = dict((item.language, item) for item in ProgLangList)
 CONFIG = get_config_from_file()
+
 
 class QuizItem:
     """ QuizItem """
@@ -164,23 +164,23 @@ class QuizItem:
     def acceptance(self):
         return '%.1f%%' % (float(self.total_acs) * 100 / float(self.total_submitted))
 
+
 class Leetcode:
 
     def __init__(self):
-
         self.items = []
         self.submissions = []
         self.num_solved = 0
         self.num_total = 0
         self.num_lock = 0
 
-        # change proglang to list
-        # config set multi languages
+        # change proglang to list; config set multi languages
         self.languages = [x.strip() for x in CONFIG['language'].split(',')]
         proglangs = [ProgLangDict[x.strip()] for x in CONFIG['language'].split(',')]
         self.prolangdict = dict(zip(self.languages, proglangs))
 
         self.base_url = BASE_URL
+        # requests.Session object allows you to persist certain parameters across requests.
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
         self.session.proxies = PROXIES
@@ -188,20 +188,16 @@ class Leetcode:
 
     def login(self):
         LOGIN_URL = self.base_url + '/accounts/login/'    # NOQA
-
         if not CONFIG['username'] or not CONFIG['password']:
-            raise Exception('Leetcode - Please input your username and password in config.cfg.')
-
+            raise Exception('Leetcode - Please input your username and password in config.ini.')
         usr = CONFIG['username']
         pwd = CONFIG['password']
-
         driver = webdriver.Chrome()
         driver.get(LOGIN_URL)
-
-        driver.find_element_by_id('id_login').send_keys(usr)
-        driver.find_element_by_id('id_password').send_keys(pwd)
-        #driver.find_element_by_id('id_remember').click()
-        driver.find_element_by_xpath('//button[@type="submit"]').click()
+        time.sleep(5)
+        driver.find_element_by_id('username-input').send_keys(usr)
+        driver.find_element_by_id('password-input').send_keys(pwd)
+        driver.find_element_by_class_name('btn-content__lOBM').click()
         time.sleep(5)
 
         webdriver_cookies = driver.get_cookies()
@@ -244,7 +240,6 @@ class Leetcode:
         # TODO: here can optimize
         if not self.is_login:
             self.login()
-
         self.load_items_from_api()
         self.load_submissions()
         self.load_solutions_to_items()
@@ -504,6 +499,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
         os.system(cmd_git_add)
         os.system(cmd_git_commit)
         #os.system(cmd_git_push)
+
 
 def do_job(leetcode):
     leetcode.load()
