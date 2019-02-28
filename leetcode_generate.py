@@ -444,12 +444,12 @@ class Leetcode:
 # :pencil2: Leetcode Solutions with {language}
 Update time:  {tm}
 
-Auto created by [leetcode_generate](https://github.com/Chyi341152/leetcodeChyi)
+Auto created by [leetcode_generate](https://github.com/chyidl/leetcode)
 
 I have solved **{num_solved}   /   {num_total}** problems
 while there are **{num_lock}** problems still locked.
 
-If you want to use this tool please follow this [Usage Guide](https://github.com/Chyi341152/leetcodeChyi/blob/master/leetcode_generate.md)
+If you want to use this tool please follow this [Usage Guide](https://github.com/chyidl/leetcode/blob/master/leetcode_generate.md)
 
 If you have any question, please give me an [issue]({repo}/issues).
 
