@@ -332,36 +332,33 @@ class Leetcode:
         """
         get code by solution
         solution: type dict
+
+        get question from another url
         """
         solution_url = solution['submission_url']
         r = self.session.get(solution_url, proxies=PROXIES)
         assert r.status_code == 200
 
-        pattern = re.compile(r'<meta name=\"description\" content=\"(?P<question>.*)\" />\n    <meta property=\"og:image\"', re.S)
-        m1 = pattern.search(r.text)
-        question = m1.groupdict()['question'] if m1 else None
-
-        if not question:
-            raise Exception('Can not find question descript in question:{title}'.format(title=solution['title']))
-
-        # html.unescape to remove &quot; &#39;
-        question = html.unescape(question)
-
         pattern = re.compile(r'submissionCode: \'(?P<code>.*)\',\n  editCodeUrl', re.S)
         m1 = pattern.search(r.text)
         code = m1.groupdict()['code'] if m1 else None
-
         if not code:
             raise Exception('Can not find solution code in question:{title}'.format(title=solution['title']))
-
         code = rep_unicode_in_code(code)
+
+        pattern = re.compile(r'<meta name=\"description\" content=\"(?P<question>.*)\" />\n    <meta property=\"og:image\"', re.S)
+        m1 = pattern.search(r.text)
+        question = m1.groupdict()['question'] if m1 else None
+        if not question:
+            raise Exception('Can not find question descript in question:{title}'.format(title=solution['title']))
+        # html.unescape to remove &quot; &#39;
+        question = html.unescape(question)
 
         return question, code
 
     def _get_code_with_anno(self, solution):
         question, code = self._get_code_by_solution(solution)
         language = solution['lang']
-
         # generate question with anno
         lines = []
         for line in question.split('\n'):
@@ -370,14 +367,12 @@ class Leetcode:
             else:
                 lines.append('{anno} {line}'.format(anno=self.prolangdict[language].annotation, line=line))
         quote_question = '\n'.join(lines)
-
         # generate content
         content = '# -*- coding:utf-8 -*-' + '\n' * 3 if language == 'python' else ''
         content += quote_question
         content += '\n' * 3
         content += code
         content += '\n'
-
         return content
 
     def _download_code_by_quiz(self, quiz):
@@ -393,10 +388,9 @@ class Leetcode:
             print('No solution with the set languages in question:{}-{}'.format(qid, qtitle))
             return
 
-        dirname = '{id}-{title}'.format(id=str(qid).zfill(3), title=qtitle)
+        dirname = '{id}-{title}'.format(id=str(qid).zfill(4), title=qtitle)
         print('begin download ' + dirname)
         check_and_make_dir(dirname)
-
         path = os.path.join(HOME, dirname)
         for slt in slts:
             fname = '{title}.{ext}'.format(title=qtitle, ext=self.prolangdict[slt['lang']].ext)
@@ -430,7 +424,6 @@ class Leetcode:
     def download_with_thread_pool(self):
         """ download all solutions with multi thread """
         ac_items = [i for i in self.items if i.is_pass]
-
         from concurrent.futures import ThreadPoolExecutor
         pool = ThreadPoolExecutor(max_workers=4)
         for quiz in ac_items:
@@ -504,7 +497,6 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 def do_job(leetcode):
     leetcode.load()
     print('Leetcode load self info')
-
     if len(sys.argv) == 1:
         # simple download
         # leetcode.dowload()
@@ -516,12 +508,10 @@ def do_job(leetcode):
             print('begin leetcode by id: {id}'.format(id=qid))
             leetcode.download_by_id(int(qid))
     print('Leetcode finish dowload')
-
     leetcode.write_readme()
     print('Leetcode finish write readme')
-
     leetcode.push_to_github()
-    #print('push to github')
+    print('push to github')
 
 
 if __name__ == '__main__':
