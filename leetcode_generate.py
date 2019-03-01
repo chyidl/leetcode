@@ -485,7 +485,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
                 language = ':lock:'
             else:
                 if item.solutions:
-                    dirname = '{id}-{title}'.format(id=str(item.question_id).zfill(3), title=item.question__title_slug)
+                    dirname = '{id}-{title}'.format(id=str(item.question_id).zfill(4), title=item.question__title_slug)
                     language = ''
                     language_lst = [i['lang'] for i in item.solutions if i['lang'] in self.languages]
                     while language_lst:
@@ -508,11 +508,11 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
         strdate = datetime.datetime.now().strftime('%Y-%m-%d')
         cmd_git_add = 'git add .'
         cmd_git_commit = 'git commit -m "update at {date}"'.format(date=strdate)
-        #cmd_git_push = 'git push -u origin master'
+        cmd_git_push = 'git push -u origin master'
 
         os.system(cmd_git_add)
         os.system(cmd_git_commit)
-        #os.system(cmd_git_push)
+        os.system(cmd_git_push)
 
 
 def do_job(leetcode):
@@ -523,8 +523,8 @@ def do_job(leetcode):
         # leetcode.dowload()
         # we use multi thread
         print('download all leetcode solutions')
-        # leetcode.download_with_thread_pool()
-        leetcode.download()
+        leetcode.download_with_thread_pool()
+        #leetcode.download()
     else:
         for qid in sys.argv[1:]:
             print('begin leetcode by id: {id}'.format(id=qid))
@@ -532,8 +532,8 @@ def do_job(leetcode):
     print('Leetcode finish dowload')
     leetcode.write_readme()
     print('Leetcode finish write readme')
-    # leetcode.push_to_github()
-    # print('push to github')
+    leetcode.push_to_github()
+    print('push to github')
 
 
 if __name__ == '__main__':
