@@ -34,12 +34,10 @@ import html
 from selenium import webdriver
 from collections import namedtuple, OrderedDict
 
-
 HOME = os.getcwd()
 CONFIG_FILE = os.path.join(HOME, 'config.ini')
 COOKIE_PATH = 'cookies.json'
 BASE_URL = 'https://leetcode.com'
-
 # If you have proxy, change PROXIES below
 PROXIES = None
 HEADERS = {
@@ -57,20 +55,17 @@ HEADERS = {
 def get_config_from_file():
     cp = configparser.ConfigParser()
     cp.read(CONFIG_FILE)
-
     if 'leetcode' not in list(cp.sections()):
-        raise Exception('Please create config.cfg first.')
+        raise Exception('Please create config.ini first.')
 
     username = cp.get('leetcode', 'username')
     if os.getenv('leetcode_username'):
         username = os.getenv('leetcode_username')
-
     password = cp.get('leetcode', 'password')
     if os.getenv('leetcode_password'):
         password = os.getenv('leetcode_password')
-
     if not username or not password:    # username and password not none
-        raise Exception('Please input your username and password in config.cfg.')
+        raise Exception('Please input your username and password in config.ini.')
 
     language = cp.get('leetcode', 'language')
     if not language:
@@ -80,7 +75,12 @@ def get_config_from_file():
     if not repo:
         raise Exception('Please input your Github repo address')
 
-    rst = dict(username=username, password=password, language=language.lower(), repo=repo)
+    driverpath = cp.get('leetcode', 'driverpath')
+    rst = dict(username=username,
+               password=password,
+               language=language.lower(),
+               repo=repo,
+               driverpath=driverpath)
     return rst
 
 
@@ -104,17 +104,18 @@ def check_and_make_dir(dirname):
 
 
 ProgLang = namedtuple('ProgLang', ['language', 'ext', 'annotation'])
-ProgLangList = [ProgLang('cpp', 'cpp', '//'),
+ProgLangList = [ProgLang('c', 'c', '//'),
+                ProgLang('cpp', 'cpp', '//'),
                 ProgLang('java', 'java', '//'),
                 ProgLang('python', 'py', '#'),
                 ProgLang('python3', 'py', '#'),
-                ProgLang('c', 'c', '//'),
                 ProgLang('csharp', 'cs', '//'),
                 ProgLang('javascript', 'js', '//'),
                 ProgLang('ruby', 'rb', '#'),
                 ProgLang('swift', 'swift', '//'),
-                ProgLang('golang', 'go', '//')]
-
+                ProgLang('golang', 'go', '//'),
+                ProgLang('scala', 'scala', '//'),
+                ProgLang('rust', 'rs', '//')]
 ProgLangDict = dict((item.language, item) for item in ProgLangList)
 CONFIG = get_config_from_file()
 
@@ -128,8 +129,11 @@ class QuizItem:
         self.solutions = []
 
     def __str__(self):
-        return '<Quiz: {question_id}-{question__title_slug}({difficulty})-{is_pass}>'.format(question_id=self.question_id,
-         question__title_slug=self.question__title_slug, difficulty=self.difficulty, is_pass=self.is_pass)
+        return '<Quiz: {question_id}-{question__title_slug}({difficulty})-{is_pass}>'.format(
+            question_id=self.question_id,
+            question__title_slug=self.question__title_slug,
+            difficulty=self.difficulty,
+            is_pass=self.is_pass)
 
     def __repr__(self):
         return self.__str__()
@@ -153,16 +157,18 @@ class QuizItem:
 
     @property
     def is_lock(self):
-        # return not self.is_paid and self.paid_only
-        return self.paid_only
+        return not self.is_favor and self.paid_only
 
     @property
     def url(self):
-        return '{base_url}/problems/{question__title_slug}'.format(base_url=self.base_url,question__title_slug=self.question__title_slug)
+        return '{base_url}/problems/{question__title_slug}'.format(
+            base_url=self.base_url,
+            question__title_slug=self.question__title_slug)
 
     @property
     def acceptance(self):
-        return '%.1f%%' % (float(self.total_acs) * 100 / float(self.total_submitted))
+        return '%.1f%%' % (
+                float(self.total_acs) * 100 / float(self.total_submitted))
 
 
 class Leetcode:
@@ -173,12 +179,11 @@ class Leetcode:
         self.num_solved = 0
         self.num_total = 0
         self.num_lock = 0
-
-        # change proglang to list; config set multi languages
+        # change proglang to list
+        # config set multi languages
         self.languages = [x.strip() for x in CONFIG['language'].split(',')]
         proglangs = [ProgLangDict[x.strip()] for x in CONFIG['language'].split(',')]
         self.prolangdict = dict(zip(self.languages, proglangs))
-
         self.base_url = BASE_URL
         # requests.Session object allows you to persist certain parameters across requests.
         self.session = requests.Session()
@@ -192,22 +197,26 @@ class Leetcode:
             raise Exception('Leetcode - Please input your username and password in config.ini.')
         usr = CONFIG['username']
         pwd = CONFIG['password']
-        driver = webdriver.Chrome()
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        options.add_argument('--disable-gpu')
+        executable_path = CONFIG.ge('driverpath')
+        driver = webdriver.Chrome(chrome_options=options,
+                                  executable_path=executable_path)
         driver.get(LOGIN_URL)
-        time.sleep(5)
+        # Wait for loading finished
+        time.sleep(10)
         driver.find_element_by_id('username-input').send_keys(usr)
         driver.find_element_by_id('password-input').send_keys(pwd)
         driver.find_element_by_class_name('btn-content__lOBM').click()
         time.sleep(5)
-
         webdriver_cookies = driver.get_cookies()
-
+        driver.close()
         if 'LEETCODE_SESSION' not in [cookie['name'] for cookie in webdriver_cookies]:
             raise Exception('Please check your config or your network.')
 
         with open(COOKIE_PATH, 'w') as f:
             json.dump(webdriver_cookies, f, indent=2)
-
         self.cookies = {str(cookie['name']): str(cookie['value']) for cookie in webdriver_cookies}
         self.session.cookies.update(self.cookies)
 
@@ -223,7 +232,6 @@ class Leetcode:
             raise Exception("Something wrong with your personal info.\n")
 
         self.items = []  # destroy first ; for sake maybe needn't
-
         self.num_solved = rst['num_solved']
         self.num_total = rst['num_total']
         self.items = list(self._generate_items_from_api(rst))
@@ -268,7 +276,6 @@ class Leetcode:
     def is_login(self):
         """ validate if the cookie exists and not overtime """
         api_url = self.base_url + '/api/problems/algorithms/'    # NOQA
-
         if not os.path.exists(COOKIE_PATH):
             return False
         with open(COOKIE_PATH, 'r') as f:
@@ -284,18 +291,26 @@ class Leetcode:
     def load_submissions(self):
         """ load all submissions from leetcode """
         # set limit a big num
-        limit = 10000
+        print('API load submissions request 2 seconds per request')
+        print('Please wait ...')
+        limit = 20
+        offset = 0
+        last_key = ''
         while True:
-            submissions_url = '{}/api/submissions/?format=json&limit={}&offset=0'.format(self.base_url, limit)
+            print('try to load submissions from ', offset, ' to ', offset+limit)
+            submissions_url = '{}/api/submissions/?format=json&limit={}&offset={}&last_key={}'.format(
+                self.base_url, limit, offset, last_key)
             resp = self.session.get(submissions_url, proxies=PROXIES)
             assert resp.status_code == 200
             data = resp.json()
             if 'has_next' not in data.keys():
                 raise Exception('Get submissions wrong, Check network\n')
+            self.submissions += data['submissions_dump']  # this for what??
             if data['has_next']:
-                limit = 10 * limit
+                offset += limit
+                last_key = data['last_key']
+                time.sleep(2)
             else:
-                self.submissions = data['submissions_dump']
                 break
 
     def load_solutions_to_items(self):
@@ -311,6 +326,7 @@ class Leetcode:
                                     lang = sub['lang'],
                                     submission_url = self.base_url + sub['url'])
         ac_subs = [make_sub(sub) for sub in self.submissions if sub['status_display'] == 'Accepted']
+
         def remain_shortesttime_submissions(submissions):
             submissions_dict = {}
             for item in submissions:
@@ -322,6 +338,7 @@ class Leetcode:
                     if item['runtime'] < old['runtime']:
                         submissions_dict[k] = item
             return list(submissions_dict.values())
+
         shortest_subs = remain_shortesttime_submissions(ac_subs)
         for solution in shortest_subs:
             title = solution['title']
@@ -331,29 +348,31 @@ class Leetcode:
     def _get_code_by_solution(self, solution):
         """
         get code by solution
-        solution: type dict
 
-        get question from another url
+        solution: type dict
         """
         solution_url = solution['submission_url']
+        print(solution_url)
         r = self.session.get(solution_url, proxies=PROXIES)
         assert r.status_code == 200
-
-        pattern = re.compile(r'submissionCode: \'(?P<code>.*)\',\n  editCodeUrl', re.S)
+        pattern = re.compile(
+            r'<meta name=\"description\" content=\"(?P<question>.*)\" />\n    \n    <meta property=\"og:image\"',
+            re.S,)
+        m1 = pattern.search(r.text)
+        question = m1.groupdict()['question'] if m1 else None
+        if not question:
+            raise Exception(
+                'Can not find question descript in question:{title}'.format(
+                    title=solution['title']))
+        # html.unescape to remove &quot; &#39;
+        question = html.unescape(question)
+        pattern = re.compile(
+            r'submissionCode: \'(?P<code>.*)\',\n  editCodeUrl', re.S)
         m1 = pattern.search(r.text)
         code = m1.groupdict()['code'] if m1 else None
         if not code:
             raise Exception('Can not find solution code in question:{title}'.format(title=solution['title']))
         code = rep_unicode_in_code(code)
-
-        pattern = re.compile(r'<meta name=\"description\" content=\"(?P<question>.*)\" />\n    <meta property=\"og:image\"', re.S)
-        m1 = pattern.search(r.text)
-        question = m1.groupdict()['question'] if m1 else None
-        if not question:
-            raise Exception('Can not find question descript in question:{title}'.format(title=solution['title']))
-        # html.unescape to remove &quot; &#39;
-        question = html.unescape(question)
-
         return question, code
 
     def _get_code_with_anno(self, solution):
@@ -365,7 +384,7 @@ class Leetcode:
             if line.strip() == '':
                 lines.append(self.prolangdict[language].annotation)
             else:
-                lines.append('{anno} {line}'.format(anno=self.prolangdict[language].annotation, line=line))
+                lines.append('{anno} {line}'.format(anno=self.prolangdict[language].annotation, line=html.unescape(line)))
         quote_question = '\n'.join(lines)
         # generate content
         content = '# -*- coding:utf-8 -*-' + '\n' * 3 if language == 'python' else ''
@@ -397,6 +416,7 @@ class Leetcode:
             filename = os.path.join(path, fname)
             content = self._get_code_with_anno(slt)
             import codecs
+
             with codecs.open(filename, 'w', 'utf-8') as f:
                 print('write to file ->', fname)
                 f.write(content)
@@ -419,6 +439,7 @@ class Leetcode:
         """ download all solutions with single thread """
         ac_items = [i for i in self.items if i.is_pass]
         for quiz in ac_items:
+            time.sleep(1)
             self._download_code_by_quiz(quiz)
 
     def download_with_thread_pool(self):
@@ -502,7 +523,8 @@ def do_job(leetcode):
         # leetcode.dowload()
         # we use multi thread
         print('download all leetcode solutions')
-        leetcode.download_with_thread_pool()
+        # leetcode.download_with_thread_pool()
+        leetcode.download()
     else:
         for qid in sys.argv[1:]:
             print('begin leetcode by id: {id}'.format(id=qid))
@@ -510,8 +532,8 @@ def do_job(leetcode):
     print('Leetcode finish dowload')
     leetcode.write_readme()
     print('Leetcode finish write readme')
-    leetcode.push_to_github()
-    print('push to github')
+    # leetcode.push_to_github()
+    # print('push to github')
 
 
 if __name__ == '__main__':
