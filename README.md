@@ -1,10 +1,10 @@
 
 # :pencil2: Leetcode Solutions with Python3
-Update time:  2019-03-03 09:36:53
+Update time:  2019-03-03 19:56:27
 
 Auto created by [leetcode_generate](https://github.com/chyidl/leetcode)
 
-I have solved **6   /   949** problems
+I have solved **6   /   953** problems
 while there are **140** problems still locked.
 
 If you want to use this tool please follow this [Usage Guide](https://github.com/chyidl/leetcode/blob/master/leetcode_generate.md)
@@ -965,4 +965,8 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |1039|[find-the-town-judge](https://leetcode.com/problems/find-the-town-judge)|||Easy|
 |1040|[maximum-binary-tree-ii](https://leetcode.com/problems/maximum-binary-tree-ii)|||Medium|
 |1041|[available-captures-for-rook](https://leetcode.com/problems/available-captures-for-rook)|||Easy|
+|1042|[minimum-cost-to-merge-stones](https://leetcode.com/problems/minimum-cost-to-merge-stones)|||Hard|
 |1043|[grid-illumination](https://leetcode.com/problems/grid-illumination)|||Hard|
+|1044|[find-common-characters](https://leetcode.com/problems/find-common-characters)|||Easy|
+|1045|[check-if-word-is-valid-after-substitutions](https://leetcode.com/problems/check-if-word-is-valid-after-substitutions)|||Medium|
+|1046|[max-consecutive-ones-iii](https://leetcode.com/problems/max-consecutive-ones-iii)|||Medium|
