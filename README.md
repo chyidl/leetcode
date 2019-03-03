@@ -1,10 +1,10 @@
 
 # :pencil2: Leetcode Solutions with Python3
-Update time:  2019-03-03 08:37:37
+Update time:  2019-03-03 09:32:59
 
 Auto created by [leetcode_generate](https://github.com/chyidl/leetcode)
 
-I have solved **5   /   949** problems
+I have solved **6   /   949** problems
 while there are **140** problems still locked.
 
 If you want to use this tool please follow this [Usage Guide](https://github.com/chyidl/leetcode/blob/master/leetcode_generate.md)
