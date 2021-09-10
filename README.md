@@ -1,11 +1,11 @@
 
 # :pencil2: Leetcode Solutions with Python3,Golang
-Update time:  2021-09-10 08:30:50
+Update time:  2021-09-10 11:06:01
 
 Auto created by [leetcode_generate](https://github.com/chyidl/leetcode)
 
-I have solved **42   /   1807** problems
-while there are **279** problems still locked.
+I have solved **42   /   1808** problems
+while there are **280** problems still locked.
 
 If you want to use this tool please follow this [Usage Guide](https://github.com/chyidl/leetcode/blob/master/leetcode_generate.md)
 
@@ -1824,3 +1824,4 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |2124|[first-day-where-you-have-been-in-all-the-rooms](https://leetcode.com/problems/first-day-where-you-have-been-in-all-the-rooms)|||Medium|
 |2125|[gcd-sort-of-an-array](https://leetcode.com/problems/gcd-sort-of-an-array)|||Hard|
 |2126|[count-nodes-equal-to-sum-of-descendants](https://leetcode.com/problems/count-nodes-equal-to-sum-of-descendants)|:lock:||Medium|
+|2141|[smallest-greater-multiple-made-of-two-digits](https://leetcode.com/problems/smallest-greater-multiple-made-of-two-digits)|:lock:||Medium|

@@ -42,11 +42,20 @@
 
 
 func twoSum(nums []int, target int) []int {
+    /*
+        解题思路:
+            1. 首先使用map存储数字和下标的映射关系: 
+            2. 查找map中是否符合 target - thisNum的存储是指
+    
+        时间复杂度: 最坏情况 O(n) 需要一次完整遍历
+        空间复杂度: O(n)
+    */
+    
     // map fast lookups, adds, and delete
     seenNums := make(map[int]int)
     for index, thisNum := range nums {
         if seenIndex, ok := seenNums[target - thisNum]; ok {
-            return []int{index, seenIndex}
+            return []int{seenIndex, index}
         }
         seenNums[thisNum] = index
     }

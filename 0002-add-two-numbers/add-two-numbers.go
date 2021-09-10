@@ -43,20 +43,30 @@
  *     Next *ListNode
  * }
  */
+/*
+    解题思路:
+        1. 创建新的链表存储合并后的结果 result
+        2. 遍历输入l1, l2链表数值 并相加保存到 carry
+        3. 对相加后的结果carry求余 赋值result
+    
+    时间复杂度: O(m + n)
+    空间复杂度: O(m + n)
+*/
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-    // 初始化
-    carry, dummy := 0, new(ListNode)
-    for node := dummy; l1 != nil || l2 != nil || carry > 0; node = node.Next {
-        if l1 != nil {
-            carry += l1.Val
-            l1 = l1.Next
-        }
-        if l2 != nil {
-            carry += l2.Val
-            l2 = l2.Next
-        }
-        node.Next = &ListNode{carry%10, nil}
-        carry /= 10
-    }
-    return dummy.Next
+	// 初始化余数,结果集
+	carry, result := 0, new(ListNode)
+	for node := result; l1 != nil || l2 != nil || carry > 0; node = node.Next {
+		if l1 != nil {
+			carry += l1.Val
+			l1 = l1.Next
+		}
+		if l2 != nil {
+			carry += l2.Val
+			l2 = l2.Next
+		}
+		node.Next = &ListNode{carry % 10, nil}
+		carry /= 10
+	}
+	return result.Next
 }
+
