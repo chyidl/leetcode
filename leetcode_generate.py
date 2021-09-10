@@ -261,7 +261,7 @@ class Leetcode:
             data['question__title_slug'] = quiz['stat']['question__title_slug']
             data['question__title'] = quiz['stat']['question__title']
             data['question__article__slug'] = quiz['stat']['question__article__slug']
-            #data['is_paid'] = json_data['is_paid']
+            data['is_paid'] = json_data['is_paid']
             data['paid_only'] = quiz['paid_only']
             data['level'] = quiz['difficulty']['level']
             data['is_favor'] = quiz['is_favor']
