@@ -46,3 +46,4 @@ $ python3 leetcode_generate.py 1 100
 Changelogs:
 -----------
 - 2019-02-28 Fix the login bug caused by Leetcode change its login page
+- 2021-09-10 Fix the login bug caused by Leetcode change its login page element id name
