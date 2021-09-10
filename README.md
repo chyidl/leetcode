@@ -1,6 +1,6 @@
 
 # :pencil2: Leetcode Solutions with Python3,Golang
-Update time:  2021-09-10 11:06:01
+Update time:  2021-09-10 11:07:44
 
 Auto created by [leetcode_generate](https://github.com/chyidl/leetcode)
 
