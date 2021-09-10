@@ -198,8 +198,8 @@ class Leetcode:
         usr = CONFIG['username']
         pwd = CONFIG['password']
         options = webdriver.ChromeOptions()
-        #options.add_argument('headless')
-        #options.add_argument('--disable-gpu')
+        options.add_argument('headless')
+        options.add_argument('--disable-gpu')
         executable_path = CONFIG.get('driverpath')
         driver = webdriver.Chrome(chrome_options=options,
                                   executable_path=executable_path)
