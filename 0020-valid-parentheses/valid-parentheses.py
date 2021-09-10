@@ -1,4 +1,4 @@
-# Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+# Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
 #
 # An input string is valid if:
 #
@@ -7,59 +7,59 @@
 # 	Open brackets must be closed in the correct order.
 #
 #
-# Note that an empty string is also considered valid.
-#
+#  
 # Example 1:
 #
 #
-# Input: "()"
+# Input: s = "()"
 # Output: true
 #
 #
 # Example 2:
 #
 #
-# Input: "()[]{}"
+# Input: s = "()[]{}"
 # Output: true
 #
 #
 # Example 3:
 #
 #
-# Input: "(]"
+# Input: s = "(]"
 # Output: false
 #
 #
 # Example 4:
 #
 #
-# Input: "([)]"
+# Input: s = "([)]"
 # Output: false
 #
 #
 # Example 5:
 #
 #
-# Input: "{[]}"
+# Input: s = "{[]}"
 # Output: true
+#
+#
+#  
+# Constraints:
+#
+#
+# 	1 <= s.length <= 104
+# 	s consists of parentheses only '()[]{}'.
 #
 #
 
 
 class Solution:
     def isValid(self, s: str) -> bool:
-        stack = list()
-        rule_dict = {')':'(', ']':'[', '}':'{'}
-        for i in s:
-            if not stack:
-                stack.append(i)
-            else:
-                if i in rule_dict.keys() and rule_dict[i] == stack[-1]:
-                    stack.pop()
-                else:
-                    stack.append(i)
-        if not stack:
-            return True
-        else:
-            return False
-            
+        stack = [] 
+        paren_map = {')': '(', ']': '[', '}': '{'}
+        for c in s:
+            if c not in paren_map:
+                stack.append(c)
+            elif not stack or paren_map[c] != stack.pop():
+                return False 
+        return not stack

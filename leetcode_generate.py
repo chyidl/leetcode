@@ -198,17 +198,17 @@ class Leetcode:
         usr = CONFIG['username']
         pwd = CONFIG['password']
         options = webdriver.ChromeOptions()
-        options.add_argument('headless')
-        options.add_argument('--disable-gpu')
-        executable_path = CONFIG.ge('driverpath')
+        #options.add_argument('headless')
+        #options.add_argument('--disable-gpu')
+        executable_path = CONFIG.get('driverpath')
         driver = webdriver.Chrome(chrome_options=options,
                                   executable_path=executable_path)
         driver.get(LOGIN_URL)
         # Wait for loading finished
         time.sleep(10)
-        driver.find_element_by_id('username-input').send_keys(usr)
-        driver.find_element_by_id('password-input').send_keys(pwd)
-        driver.find_element_by_class_name('btn-content__lOBM').click()
+        driver.find_element_by_id('id_login').send_keys(usr)
+        driver.find_element_by_id('id_password').send_keys(pwd)
+        driver.find_element_by_class_name('btn-content__2V4r').click()
         time.sleep(5)
         webdriver_cookies = driver.get_cookies()
         driver.close()

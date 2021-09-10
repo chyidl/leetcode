@@ -1,44 +1,47 @@
-# Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+# Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
 #
-# Note:
+# Notice that the solution set must not contain duplicate triplets.
 #
-# The solution set must not contain duplicate triplets.
+#  
+# Example 1:
+# Input: nums = [-1,0,1,2,-1,-4]
+# Output: [[-1,-1,2],[-1,0,1]]
+# Example 2:
+# Input: nums = []
+# Output: []
+# Example 3:
+# Input: nums = [0]
+# Output: []
 #
-# Example:
+#  
+# Constraints:
 #
 #
-# Given array nums = [-1, 0, 1, 2, -1, -4],
-#
-# A solution set is:
-# [
-#   [-1, 0, 1],
-#   [-1, -1, 2]
-# ]
+# 	0 <= nums.length <= 3000
+# 	-105 <= nums[i] <= 105
 #
 #
 
 
 class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
-        result = []
-        nums.sort()  # 快速排序 时间复杂度O(nlogn)
-        # 2019-03-01 13:30:00 好巧妙 
-        for i in range(len(nums)-2):
-            if i > 0 and nums[i-1] == nums[i]:
+        # Solution: 暴力求解 O(n^3)
+        
+        # Solution: Set O(n^2)
+        
+        # Solution: SortFind O(nlogn) O(n^2) 
+        if len(nums) < 3: return []
+        nums.sort() 
+        res = set()
+        for i, v in enumerate(nums[:-2]):
+            # 跳过重复
+            if i >= 1 and v == nums[i-1]:
                 continue
-            l, r = i+1, len(nums)-1
-            while l < r:
-                valitional = nums[i] + nums[l] + nums[r]
-                if valitional < 0:
-                    l += 1
-                elif valitional > 0:
-                    r -= 1
+            d = {} 
+            for x in nums[i+1:]:
+                if x not in d:
+                    # flag
+                    d[-(v+x)] = True
                 else:
-                    result.append([nums[i], nums[l], nums[r]])
-                    while l < r and nums[l] == nums[l+1]:
-                        l += 1
-                    while l < r and nums[r-1] == nums[r]:
-                        r -= 1
-                    l += 1
-                    r -= 1
-        return result
+                    res.add((v, -v-x, x))
+        return map(list, res)
