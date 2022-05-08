@@ -103,9 +103,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# private files 
+# private files
 config.ini
 cookies.json
 
 # pycharm
-.idea/ 
+.idea/
